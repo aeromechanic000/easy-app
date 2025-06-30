@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com;
         connect-src 'self' https://text.pollinations.ai;
@@ -381,36 +381,6 @@
             margin: 0;
             white-space: pre-wrap;
             word-wrap: break-word;
-        }
-
-        .copy-btn {
-            background: #333333;
-            color: #ffffff;
-            border: 1px solid #555555;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            height: 28px;
-            position: absolute;
-            top: 12px;
-            right: 12px;
-        }
-
-        .copy-btn:hover {
-            background: #444444;
-            color: #ffffff;
-        }
-
-        .copy-btn svg {
-            width: 12px;
-            height: 12px;
         }
 
         /* Input Area */
@@ -897,16 +867,41 @@
         function findLastHtmlCode() {
             if (!chats[currentChat]) return null;
             
+            console.log('Searching for HTML in current chat:', currentChat);
+            console.log('Chat messages:', chats[currentChat]);
+            
             // Go through messages in reverse to find the last HTML code
             for (let i = chats[currentChat].length - 1; i >= 0; i--) {
                 const message = chats[currentChat][i];
+                console.log(`Checking message ${i}:`, message);
+                
                 if (message.role === 'assistant' && message.content !== 'WELCOME_MESSAGE') {
-                    const htmlMatch = message.content.match(/```html\n?([\s\S]*?)```/);
-                    if (htmlMatch && htmlMatch[1].trim().includes('<!DOCTYPE html')) {
-                        return htmlMatch[1].trim();
+                    // Try multiple regex patterns for HTML code blocks
+                    const patterns = [
+                        /```html\s*\n?([\s\S]*?)```/gi,
+                        /```\s*html\s*\n?([\s\S]*?)```/gi,
+                        /```\s*\n?(<!DOCTYPE html[\s\S]*?)```/gi
+                    ];
+                    
+                    for (const pattern of patterns) {
+                        const matches = message.content.matchAll(pattern);
+                        const matchArray = Array.from(matches);
+                        
+                        if (matchArray.length > 0) {
+                            // Get the last match if there are multiple
+                            const lastMatch = matchArray[matchArray.length - 1];
+                            const code = lastMatch[1].trim();
+                            console.log('Found HTML code:', code.substring(0, 100) + '...');
+                            
+                            if (code.includes('<!DOCTYPE html') || code.includes('<html')) {
+                                return code;
+                            }
+                        }
                     }
                 }
             }
+            
+            console.log('No HTML code found');
             return null;
         }
 
@@ -1261,14 +1256,7 @@ The webpage should be written in a single HTML file with React JS for modern and
             const blockId = 'code_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             
             return `<div class="code-block">
-                <div class="code-content" style="position: relative;">
-                    <button class="copy-btn" onclick="copyCode('${blockId}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                            <path d="m5,15h4a2,2 0 0,1 2,-2v-4a2,2 0 0,0 -2,-2h-4a2,2 0 0,0 -2,2v4a2,2 0 0,0 2,2z"></path>
-                        </svg>
-                        Copy
-                    </button>
+                <div class="code-content">
                     <pre id="${blockId}">${escapeHtml(code)}</pre>
                 </div>
             </div>`;
@@ -1281,25 +1269,6 @@ The webpage should be written in a single HTML file with React JS for modern and
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
-        }
-
-        function copyCode(blockId) {
-            const codeElement = document.getElementById(blockId);
-            const code = codeElement.textContent;
-            
-            navigator.clipboard.writeText(code).then(function() {
-                const copyBtn = codeElement.closest('.code-content').querySelector('.copy-btn');
-                const originalHTML = copyBtn.innerHTML;
-                copyBtn.innerHTML = `
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20,6 9,17 4,12"/>
-                    </svg>
-                    Copied!
-                `;
-                setTimeout(function() {
-                    copyBtn.innerHTML = originalHTML;
-                }, 2000);
-            });
         }
 
         function closePreview() {
