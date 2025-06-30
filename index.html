@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html><html lang="en"><head>
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com;
         connect-src 'self' https://text.pollinations.ai;
@@ -10,7 +10,7 @@
         block-all-mixed-content;">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Just Chat</title>
+    <title>Easy App</title>
     <style>
         * {
             margin: 0;
@@ -173,11 +173,14 @@
             border-right: 1px solid #333333;
             display: flex;
             flex-direction: column;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
         }
 
         .sidebar.hidden {
-            transform: translateX(-100%);
+            width: 0;
+            border-right: none;
+            overflow: hidden;
         }
 
         .sidebar-header {
@@ -253,6 +256,7 @@
             flex-direction: column;
             overflow: hidden;
             background: #ffffff;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .chat-area {
@@ -266,7 +270,7 @@
         }
 
         .message {
-            max-width: 75%;
+            max-width: 85%;
             word-wrap: break-word;
             animation: fadeInUp 0.3s ease;
         }
@@ -296,59 +300,126 @@
             align-self: flex-start;
             background: #f8f9fa;
             color: #1a1a1a;
-            padding: 16px 20px;
+            padding: 20px 24px;
             border-radius: 20px 20px 20px 6px;
             border: 1px solid #e9ecef;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            line-height: 1.6;
+        }
+
+        .welcome-prompt {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #dee2e6;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #666666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .app-suggestions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .suggestion-btn {
+            background: #ffffff;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .suggestion-btn:hover {
+            border-color: #666666;
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
         .code-block {
             background: #1a1a1a;
             border: 1px solid #333333;
             border-radius: 16px;
-            margin: 16px 0;
+            margin: 20px 0;
             overflow: hidden;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
         }
 
         .code-header {
             background: #222222;
-            padding: 12px 20px;
+            padding: 16px 24px;
             border-bottom: 1px solid #333333;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
-            color: #cccccc;
+            font-size: 14px;
+            color: #ffffff;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        }
+
+        .code-language {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #cccccc;
+        }
+
+        .code-actions {
+            display: flex;
+            gap: 8px;
         }
 
         .code-content {
-            padding: 20px;
+            padding: 24px;
             overflow-x: auto;
             font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-            font-size: 13px;
+            font-size: 14px;
             line-height: 1.6;
             color: #e6e6e6;
+            background: #1a1a1a;
+        }
+
+        .code-content pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         .code-btn {
             background: #333333;
             color: #ffffff;
             border: 1px solid #555555;
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 500;
-            margin-left: 8px;
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
         }
 
         .code-btn:hover {
@@ -356,9 +427,17 @@
             color: #ffffff;
         }
 
+        .code-btn.preview-btn {
+            background: #555555;
+        }
+
+        .code-btn.preview-btn:hover {
+            background: #666666;
+        }
+
         .code-btn svg {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
         }
 
         /* Input Area */
@@ -452,7 +531,7 @@
         }
 
         .preview-area.open {
-            width: 75%;
+            width: 60%;
         }
 
         .preview-header {
@@ -477,14 +556,16 @@
 
         .preview-content {
             flex: 1;
-            overflow: auto;
+            overflow: hidden;
             background: #ffffff;
+            position: relative;
         }
 
         .preview-iframe {
             width: 100%;
             height: 100%;
             border: none;
+            background: #ffffff;
         }
 
         .loading {
@@ -570,9 +651,14 @@
                 z-index: 100;
                 width: 280px;
             }
+
+            .sidebar.hidden {
+                width: 0;
+                transform: translateX(-100%);
+            }
             
             .message {
-                max-width: 90%;
+                max-width: 95%;
             }
             
             .preview-area.open {
@@ -594,6 +680,10 @@
             .chat-area {
                 padding: 24px 20px;
             }
+
+            .app-suggestions {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -602,7 +692,7 @@
         <!-- Title Bar -->
         <div class="title-bar">
             <div class="title-left">
-                <div class="title">Just Chat</div>
+                <div class="title">Easy App</div>
                 <a href="https://aeromechanic.fun" class="aeromechanic-btn" target="_blank">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
                         <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
@@ -613,7 +703,7 @@
                 </a>
             </div>
             <div class="title-right">
-                <button class="icon-btn" onclick="toggleSidebar()" title="Toggle Chat History">
+                <button class="icon-btn" onclick="toggleSidebar()" title="Toggle Project History">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="3" y1="6" x2="21" y2="6"></line>
                         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -636,14 +726,14 @@
                             <polyline points="7,10 12,15 17,10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        <span>Export Chat</span>
+                        <span>Export Project</span>
                     </div>
                     <div class="menu-item" onclick="clearAllChats()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3,6 5,6 21,6"></polyline>
                             <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
                         </svg>
-                        <span>Clear All Chats</span>
+                        <span>Clear All Projects</span>
                     </div>
                 </div>
             </div>
@@ -659,12 +749,12 @@
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        New Chat
+                        New Webpage Project
                     </button>
                 </div>
                 <div class="chat-history" id="chatHistory">
                     <div class="chat-item active" onclick="selectChat(this)">
-                        Welcome Chat
+                        Welcome - Webpage Ideas
                     </div>
                 </div>
             </div>
@@ -673,14 +763,39 @@
             <div class="chat-container">
                 <div class="chat-area" id="chatArea">
                     <div class="message assistant">
-                        <div>Welcome! I'm your AI assistant powered by Pollinations AI. I can help you with coding, answer questions, and create content. Try asking me anything!</div>
+                        <div class="welcome-prompt">
+                            <div class="welcome-title">🚀 Welcome to Easy App!</div>
+                            <div class="welcome-subtitle">
+                                Create beautiful, professional webpages in seconds! Perfect for events, personal projects, and quick promotional sites.
+                            </div>
+                            <div class="app-suggestions">
+                                <div class="suggestion-btn" onclick="selectAppType('event')">
+                                    🎉 Event Webpage
+                                </div>
+                                <div class="suggestion-btn" onclick="selectAppType('blog')">
+                                    📝 Personal Blog
+                                </div>
+                                <div class="suggestion-btn" onclick="selectAppType('profile')">
+                                    👤 Personal Profile
+                                </div>
+                                <div class="suggestion-btn" onclick="selectAppType('product')">
+                                    📦 Product Introduction
+                                </div>
+                                <div class="suggestion-btn" onclick="selectAppType('landing')">
+                                    🎯 Landing Page
+                                </div>
+                                <div class="suggestion-btn" onclick="selectAppType('custom')">
+                                    💡 Something Else
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Input Area -->
                 <div class="input-area">
                     <div class="input-container">
-                        <textarea class="message-input" id="messageInput" placeholder="Type your message... (Enter to send, Shift+Enter for new line)" onkeydown="handleKeyDown(event)"></textarea>
+                        <textarea class="message-input" id="messageInput" placeholder="Describe your webpage idea... (Enter to send, Shift+Enter for new line)" onkeydown="handleKeyDown(event)"></textarea>
                         <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -694,7 +809,7 @@
             <!-- Preview Area -->
             <div class="preview-area" id="previewArea">
                 <div class="preview-header">
-                    <span class="preview-title" id="previewTitle">Preview</span>
+                    <span class="preview-title" id="previewTitle">Webpage Preview</span>
                     <div class="preview-actions">
                         <button class="code-btn" onclick="downloadPreview()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -714,22 +829,37 @@
                     </div>
                 </div>
                 <div class="preview-content">
-                    <iframe class="preview-iframe" id="previewIframe"></iframe>
+                    <iframe class="preview-iframe" id="previewIframe" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let currentChat = 'Welcome Chat';
+        let currentChat = 'Welcome - Webpage Ideas';
         let chats = {
-            'Welcome Chat': [
-                { role: 'assistant', content: 'Welcome! I\'m your AI assistant powered by Pollinations AI. I can help you with coding, answer questions, and create content. Try asking me anything!' }
+            'Welcome - Webpage Ideas': [
+                { role: 'assistant', content: 'WELCOME_MESSAGE' }
             ]
         };
         let isLoading = false;
         let currentPreviewContent = '';
         let currentPreviewType = '';
+
+        function selectAppType(type) {
+            const suggestions = {
+                'event': 'I want to create an event webpage for a conference/workshop/party. Include event details, schedule, speakers, location, and registration information.',
+                'blog': 'I want to create a personal blog webpage with multiple articles, categories, and a clean reading experience.',
+                'profile': 'I want to create a personal profile webpage showcasing my skills, experience, portfolio, and contact information.',
+                'product': 'I want to create a product introduction webpage that highlights features, benefits, pricing, and testimonials.',
+                'landing': 'I want to create a landing page for marketing purposes with compelling headlines, features, and call-to-action buttons.',
+                'custom': 'I have a custom webpage idea that I\'d like to discuss...'
+            };
+            
+            const input = document.getElementById('messageInput');
+            input.value = suggestions[type];
+            input.focus();
+        }
 
         function toggleMenu() {
             const dropdown = document.getElementById('menuDropdown');
@@ -753,24 +883,26 @@
             document.getElementById('menuDropdown').classList.remove('open');
             
             if (!chats[currentChat] || chats[currentChat].length === 0) {
-                alert('No chat to export!');
+                alert('No project to export!');
                 return;
             }
 
-            let exportText = `Chat Export: ${currentChat}\n`;
+            let exportText = `Easy App Export: ${currentChat}\n`;
             exportText += `Exported on: ${new Date().toLocaleString()}\n`;
-            exportText += `Powered by Pollinations AI\n\n`;
+            exportText += `Created with Easy App - AI-powered webpage builder\n\n`;
             exportText += '='.repeat(50) + '\n\n';
 
             chats[currentChat].forEach((message, index) => {
-                exportText += `${message.role.toUpperCase()}: ${message.content}\n\n`;
+                if (message.content !== 'WELCOME_MESSAGE') {
+                    exportText += `${message.role.toUpperCase()}: ${message.content}\n\n`;
+                }
             });
 
             const blob = new Blob([exportText], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `chat_export_${currentChat.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+            a.download = `easy_app_export_${currentChat.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -780,7 +912,7 @@
         function clearAllChats() {
             document.getElementById('menuDropdown').classList.remove('open');
             
-            if (confirm('Are you sure you want to clear all chat history? This action cannot be undone.')) {
+            if (confirm('Are you sure you want to clear all webpage projects? This action cannot be undone.')) {
                 chats = {};
                 const chatHistory = document.getElementById('chatHistory');
                 chatHistory.innerHTML = '';
@@ -789,8 +921,10 @@
         }
 
         function newChat() {
-            const chatName = 'Chat ' + Object.keys(chats).length;
-            chats[chatName] = [];
+            const chatName = 'New Webpage Project ' + Object.keys(chats).length;
+            chats[chatName] = [
+                { role: 'assistant', content: 'WELCOME_MESSAGE' }
+            ];
             addChatToHistory(chatName);
             selectChatByName(chatName);
         }
@@ -828,9 +962,48 @@
             
             if (chats[currentChat]) {
                 chats[currentChat].forEach(function(message) {
-                    addMessageToChat(message.role, message.content, false);
+                    if (message.content === 'WELCOME_MESSAGE') {
+                        addWelcomeMessage();
+                    } else {
+                        addMessageToChat(message.role, message.content, false);
+                    }
                 });
             }
+        }
+
+        function addWelcomeMessage() {
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant';
+            messageDiv.innerHTML = `
+                <div class="welcome-prompt">
+                    <div class="welcome-title">🚀 Welcome to Easy App!</div>
+                    <div class="welcome-subtitle">
+                        Create beautiful, professional webpages in seconds! Perfect for events, personal projects, and quick promotional sites.
+                    </div>
+                    <div class="app-suggestions">
+                        <div class="suggestion-btn" onclick="selectAppType('event')">
+                            🎉 Event Webpage
+                        </div>
+                        <div class="suggestion-btn" onclick="selectAppType('blog')">
+                            📝 Personal Blog
+                        </div>
+                        <div class="suggestion-btn" onclick="selectAppType('profile')">
+                            👤 Personal Profile
+                        </div>
+                        <div class="suggestion-btn" onclick="selectAppType('product')">
+                            📦 Product Introduction
+                        </div>
+                        <div class="suggestion-btn" onclick="selectAppType('landing')">
+                            🎯 Landing Page
+                        </div>
+                        <div class="suggestion-btn" onclick="selectAppType('custom')">
+                            💡 Something Else
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatArea.appendChild(messageDiv);
         }
 
         function handleKeyDown(event) {
@@ -862,8 +1035,8 @@
             
             chats[currentChat].push({ role: 'user', content: message });
 
-            // Update chat name if it's empty
-            if (chats[currentChat].length === 1) {
+            // Update chat name if it's a new project
+            if (chats[currentChat].length === 2) { // Welcome message + first user message
                 updateChatName(message);
             }
 
@@ -871,12 +1044,28 @@
             updateSendButton();
 
             try {
-                const response = await callPollinationsAI(message);
+                // Enhanced prompt for webpage generation
+                const enhancedPrompt = `You are Easy App's AI assistant - a powerful webpage builder. The user wants to create a webpage. When generating code, remember to:
+
+1. Create a single HTML file with embedded React code using CDN imports
+2. Use modern and elegant UI design principles
+3. Include proper React hooks and best practices
+4. Make the webpage responsive and accessible
+5. Add beautiful styling with CSS-in-JS or embedded CSS
+6. Include interactive features and smooth animations
+7. Make the webpage fully functional and production-ready
+8. Focus on clean, professional designs suitable for short-term use
+
+User request: ${message}
+
+The webpage should be written in a single HTML file with React JS for modern and elegant UI design. Make it beautiful, interactive, and fully functional.`;
+
+                const response = await callPollinationsAI(enhancedPrompt);
                 addMessageToChat('assistant', response);
                 chats[currentChat].push({ role: 'assistant', content: response });
             } catch (error) {
                 console.error('Error calling Pollinations AI:', error);
-                addErrorMessage('Failed to get response from AI. Please try again.', message);
+                addErrorMessage('Failed to generate your webpage. Please try again.', message);
             } finally {
                 isLoading = false;
                 updateSendButton();
@@ -885,17 +1074,13 @@
 
         async function callPollinationsAI(prompt) {
             try {
-                // Add context to make responses more helpful for coding
-                const enhancedPrompt = `You are a helpful AI assistant. Please provide detailed and practical responses. If the user asks for code, provide complete, working examples with explanations.
-                User: ${prompt}`;
-            
-                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(enhancedPrompt)}`);
+                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const textResponse = await response.text();
-                return textResponse || 'Sorry, I couldn\'t generate a response. Please try again.';
+                return textResponse || 'Sorry, I couldn\'t generate your webpage. Please try again.';
             } catch (error) {
                 console.error('Pollinations AI Error:', error);
                 throw error;
@@ -905,8 +1090,8 @@
         function updateChatName(firstMessage) {
             const chatItems = document.querySelectorAll('.chat-item');
             const activeItem = document.querySelector('.chat-item.active');
-            if (activeItem && activeItem.textContent.startsWith('Chat ')) {
-                const shortName = firstMessage.length > 30 ? firstMessage.substring(0, 30) + '...' : firstMessage;
+            if (activeItem && (activeItem.textContent.startsWith('New Webpage Project') || activeItem.textContent.startsWith('Welcome'))) {
+                const shortName = firstMessage.length > 25 ? firstMessage.substring(0, 25) + '...' : firstMessage;
                 activeItem.textContent = shortName;
                 currentChat = shortName;
             }
@@ -931,12 +1116,27 @@
             updateSendButton();
 
             try {
-                const response = await callPollinationsAI(message);
+                const enhancedPrompt = `You are Easy App's AI assistant - a powerful webpage builder. The user wants to create a webpage. When generating code, remember to:
+
+1. Create a single HTML file with embedded React code using CDN imports
+2. Use modern and elegant UI design principles
+3. Include proper React hooks and best practices
+4. Make the webpage responsive and accessible
+5. Add beautiful styling with CSS-in-JS or embedded CSS
+6. Include interactive features and smooth animations
+7. Make the webpage fully functional and production-ready
+8. Focus on clean, professional designs suitable for short-term use
+
+User request: ${message}
+
+The webpage should be written in a single HTML file with React JS for modern and elegant UI design. Make it beautiful, interactive, and fully functional.`;
+
+                const response = await callPollinationsAI(enhancedPrompt);
                 addMessageToChat('assistant', response);
                 chats[currentChat].push({ role: 'assistant', content: response });
             } catch (error) {
                 console.error('Retry error:', error);
-                addErrorMessage('Still unable to get response. Please check your connection.', message);
+                addErrorMessage('Still unable to generate your webpage. Please check your connection.', message);
             } finally {
                 isLoading = false;
                 updateSendButton();
@@ -989,7 +1189,7 @@
                 processedContent = processedContent.replace(match[0], codeBlockHtml);
             }
 
-            processedContent = processedContent.replace(/`([^`]+)`/g, '<code style="background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #333333;">$1</code>');
+            processedContent = processedContent.replace(/`([^`]+)`/g, '<code style="background: #f5f5f5; padding: 3px 6px; border-radius: 4px; font-family: monospace; color: #333333; font-size: 13px;">$1</code>');
             processedContent = processedContent.replace(/\n/g, '<br>');
 
             return processedContent;
@@ -997,12 +1197,18 @@
 
         function createCodeBlock(language, code) {
             const blockId = 'code_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            const canPreview = (language === 'html' || language === 'javascript' || language === 'css') && isCompleteProgram(code, language);
+            const canPreview = language === 'html' && code.includes('<!DOCTYPE html');
             
             return `<div class="code-block">
                 <div class="code-header">
-                    <span>${language}</span>
-                    <div>
+                    <div class="code-language">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+                            <polyline points="16,18 22,12 16,6"/>
+                            <polyline points="8,6 2,12 8,18"/>
+                        </svg>
+                        ${language.toUpperCase()}
+                    </div>
+                    <div class="code-actions">
                         <button class="code-btn" onclick="copyCode('${blockId}')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -1010,12 +1216,12 @@
                             </svg>
                             Copy
                         </button>
-                        ${canPreview ? `<button class="code-btn" onclick="previewCode('${blockId}', '${language}')">
+                        ${canPreview ? `<button class="code-btn preview-btn" onclick="previewCode('${blockId}', '${language}')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
                             </svg>
-                            Preview
+                            Live Preview
                         </button>` : ''}
                     </div>
                 </div>
@@ -1023,17 +1229,6 @@
                     <pre id="${blockId}">${escapeHtml(code)}</pre>
                 </div>
             </div>`;
-        }
-
-        function isCompleteProgram(code, language) {
-            if (language === 'html') {
-                return code.includes('<html') && code.includes('<body') && code.includes('</html>');
-            } else if (language === 'javascript') {
-                return code.length > 100;
-            } else if (language === 'css') {
-                return code.includes('{') && code.includes('}') && code.length > 50;
-            }
-            return false;
         }
 
         function escapeHtml(unsafe) {
@@ -1078,13 +1273,19 @@
             
             sidebar.classList.add('hidden');
             previewArea.classList.add('open');
-            previewTitle.textContent = 'Preview - ' + language.toUpperCase();
+            previewTitle.textContent = 'Webpage Preview';
             
-            let previewContent = code;
-            
-            const blob = new Blob([previewContent], { type: 'text/html' });
+            // Create blob URL for the HTML content
+            const blob = new Blob([code], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
+            
+            // Set iframe src to the blob URL
             previewIframe.src = url;
+            
+            // Clean up the blob URL after a delay
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 1000);
         }
 
         function closePreview() {
@@ -1100,15 +1301,11 @@
         function downloadPreview() {
             if (!currentPreviewContent) return;
             
-            const fileExtension = currentPreviewType === 'javascript' ? 'js' : currentPreviewType;
-            const fileName = 'code.' + fileExtension;
-            
-            let content = currentPreviewContent;
-            const blob = new Blob([content], { type: 'text/plain' });
+            const blob = new Blob([currentPreviewContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = (currentPreviewType === 'css' || currentPreviewType === 'javascript') ? 'preview.html' : fileName;
+            a.download = 'easy-app-webpage.html';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
