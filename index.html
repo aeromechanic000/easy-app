@@ -367,30 +367,6 @@
             max-width: 100%;
         }
 
-        .code-header {
-            background: #222222;
-            padding: 16px 24px;
-            border-bottom: 1px solid #333333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .code-language {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #cccccc;
-        }
-
-        .code-actions {
-            display: flex;
-            gap: 8px;
-        }
-
         .code-content {
             padding: 24px;
             overflow-x: auto;
@@ -407,37 +383,32 @@
             word-wrap: break-word;
         }
 
-        .code-btn {
+        .copy-btn {
             background: #333333;
             color: #ffffff;
             border: 1px solid #555555;
-            padding: 6px 12px;  /* Reduced from 8px 16px */
-            border-radius: 6px;  /* Reduced from 8px */
+            padding: 6px 12px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 11px;     /* Reduced from 12px */
+            font-size: 11px;
             font-weight: 500;
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;            /* Reduced from 6px */
-            height: 28px;        /* Add fixed height */
+            gap: 4px;
+            height: 28px;
+            position: absolute;
+            top: 12px;
+            right: 12px;
         }
 
-        .code-btn:hover {
+        .copy-btn:hover {
             background: #444444;
             color: #ffffff;
         }
 
-        .code-btn.preview-btn {
-            background: #555555;
-        }
-
-        .code-btn.preview-btn:hover {
-            background: #666666;
-        }
-
-        .code-btn svg {
+        .copy-btn svg {
             width: 12px;
             height: 12px;
         }
@@ -617,6 +588,33 @@
             background: #444444;
         }
 
+        .code-btn {
+            background: #333333;
+            color: #ffffff;
+            border: 1px solid #555555;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 28px;
+        }
+
+        .code-btn:hover {
+            background: #444444;
+            color: #ffffff;
+        }
+
+        .code-btn svg {
+            width: 12px;
+            height: 12px;
+        }
+
         /* Scrollbar Styling */
         .chat-area::-webkit-scrollbar,
         .chat-history::-webkit-scrollbar,
@@ -722,6 +720,14 @@
                 
                 <!-- Dropdown Menu -->
                 <div class="menu-dropdown" id="menuDropdown">
+                    <div class="menu-item" onclick="openLivePreview()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                        <span>Live Preview</span>
+                    </div>
                     <div class="menu-item" onclick="exportChat()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -874,6 +880,60 @@
                     document.removeEventListener('click', closeMenuHandler);
                 }
             });
+        }
+
+        function openLivePreview() {
+            document.getElementById('menuDropdown').classList.remove('open');
+            
+            // Find the last HTML code block in the current chat
+            const lastHtmlCode = findLastHtmlCode();
+            if (lastHtmlCode) {
+                previewHtmlCode(lastHtmlCode);
+            } else {
+                alert('No HTML code found in current project!');
+            }
+        }
+
+        function findLastHtmlCode() {
+            if (!chats[currentChat]) return null;
+            
+            // Go through messages in reverse to find the last HTML code
+            for (let i = chats[currentChat].length - 1; i >= 0; i--) {
+                const message = chats[currentChat][i];
+                if (message.role === 'assistant' && message.content !== 'WELCOME_MESSAGE') {
+                    const htmlMatch = message.content.match(/```html\n?([\s\S]*?)```/);
+                    if (htmlMatch && htmlMatch[1].trim().includes('<!DOCTYPE html')) {
+                        return htmlMatch[1].trim();
+                    }
+                }
+            }
+            return null;
+        }
+
+        function previewHtmlCode(htmlCode) {
+            currentPreviewContent = htmlCode;
+            currentPreviewType = 'html';
+            
+            const previewArea = document.getElementById('previewArea');
+            const previewIframe = document.getElementById('previewIframe');
+            const previewTitle = document.getElementById('previewTitle');
+            const sidebar = document.getElementById('sidebar');
+            
+            sidebar.classList.add('hidden');
+            previewArea.classList.add('open');
+            previewTitle.textContent = 'Webpage Preview';
+            
+            // Create blob URL for the HTML content
+            const blob = new Blob([htmlCode], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            // Set iframe src to the blob URL
+            previewIframe.src = url;
+            
+            // Clean up the blob URL after a delay
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 1000);
         }
 
         function toggleSidebar() {
@@ -1199,27 +1259,16 @@ The webpage should be written in a single HTML file with React JS for modern and
 
         function createCodeBlock(language, code) {
             const blockId = 'code_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            const canPreview = language === 'html' && code.includes('<!DOCTYPE html');
             
             return `<div class="code-block">
-                <div class="code-header">
-                    <div class="code-language">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
-                            <polyline points="16,18 22,12 16,6"/>
-                            <polyline points="8,6 2,12 8,18"/>
+                <div class="code-content" style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('${blockId}')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="m5,15h4a2,2 0 0,1 2,-2v-4a2,2 0 0,0 -2,-2h-4a2,2 0 0,0 -2,2v4a2,2 0 0,0 2,2z"></path>
                         </svg>
-                        ${language.toUpperCase()}
-                    </div>
-                    <div class="code-actions">
-                        <button class="code-btn" onclick="copyCode('${blockId}')">
-                            Copy
-                        </button>
-                        ${canPreview ? `<button class="code-btn preview-btn" onclick="previewCode('${blockId}', '${language}')">
-                            Live Preview
-                        </button>` : ''}
-                    </div>
-                </div>
-                <div class="code-content">
+                        Copy
+                    </button>
                     <pre id="${blockId}">${escapeHtml(code)}</pre>
                 </div>
             </div>`;
@@ -1239,7 +1288,7 @@ The webpage should be written in a single HTML file with React JS for modern and
             const code = codeElement.textContent;
             
             navigator.clipboard.writeText(code).then(function() {
-                const copyBtn = codeElement.closest('.code-block').querySelector('.code-btn');
+                const copyBtn = codeElement.closest('.code-content').querySelector('.copy-btn');
                 const originalHTML = copyBtn.innerHTML;
                 copyBtn.innerHTML = `
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1251,35 +1300,6 @@ The webpage should be written in a single HTML file with React JS for modern and
                     copyBtn.innerHTML = originalHTML;
                 }, 2000);
             });
-        }
-
-        function previewCode(blockId, language) {
-            const codeElement = document.getElementById(blockId);
-            const code = codeElement.textContent;
-            
-            currentPreviewContent = code;
-            currentPreviewType = language;
-            
-            const previewArea = document.getElementById('previewArea');
-            const previewIframe = document.getElementById('previewIframe');
-            const previewTitle = document.getElementById('previewTitle');
-            const sidebar = document.getElementById('sidebar');
-            
-            sidebar.classList.add('hidden');
-            previewArea.classList.add('open');
-            previewTitle.textContent = 'Webpage Preview';
-            
-            // Create blob URL for the HTML content
-            const blob = new Blob([code], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            
-            // Set iframe src to the blob URL
-            previewIframe.src = url;
-            
-            // Clean up the blob URL after a delay
-            setTimeout(() => {
-                URL.revokeObjectURL(url);
-            }, 1000);
         }
 
         function closePreview() {
@@ -1317,6 +1337,7 @@ The webpage should be written in a single HTML file with React JS for modern and
             document.getElementById('messageInput').focus();
         });
     </script>
+
 
 
 
